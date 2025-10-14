@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   
+  <meta charset="UTF-8">
+   
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Language Video Viewer</title>
+    <style>
+    body {
+      background: #111;
+      color: #00ffcc;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 2rem;
+    }
+
+    input {
+      padding: 10px;
+      font-size: 1rem;
+      width: 200px;
+      border-radius: 5px;
+      border: 1px solid #00ffcc;
+      margin-top: 15px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      margin-left: 10px;
+      border-radius: 5px;
+      border: none;
+      background: #00ffcc;
+      color: #111;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background: #00cca0;
+    }
+
+    /* Styles for the YouTube embed (iframe) */
+    #videoContainer {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      /* Set a fixed aspect ratio for the video player */
+      max-width: 560px;
+      /* Standard YouTube embed width */
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    #signVideo {
+      width: 560px;
+      height: 315px;
+      /* Standard YouTube embed height for 16:9 ratio */
+      border: 3px solid #00ffcc;
+      border-radius: 10px;
+    }
+
+    #notfound {
+      margin-top: 20px;
+      font-size: 1.2rem;
+      color: #ff4444;
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.5rem;
+      }
+
+      input {
+        width: 150px;
+      }
+
+      /* Make video responsive on small screens */
+      #signVideo {
+        width: 90%;
+        height: 200px;
+        /* Adjusted fixed height for mobile */
+        margin: 0 auto;
+      }
+
+      #videoContainer {
+        max-width: 90%;
+        overflow: hidden;
+      }
+    }
+  </style>
+</head>
+
+<body>
+    <h1>Sign Language Video Viewer</h1>
+    <input type="text" id="wordInput" placeholder="Type a word...">
+    <button onclick="showVideo()">Show Sign</button>
+
+    <div id="videoContainer">
+        <iframe id="signVideo" src="" frameborder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen
+      style="display:none;"></iframe>
+        <div id="notfound" style="display:none;">Sign not found</div>
+      </div>
+
+   
+  <script>
+    // Map words to YouTube embed URLs (e.g., "https://www.youtube.com/embed/VIDEO_ID?autoplay=1")
+    const signVideos = {
+      // Example ASL YouTube Embeds (replace with actual videos if needed)
+      "hello": "https://youtu.be/FVjpLa8GqeM",
+      "thank you": "https://youtu.be/IvRwNLNR4_w",
+      "agree": "https://youtu.be/mfgzZNvZo9w",
+      "disagree": "https://youtu.be/_sQbTlIJZuc",
+      "i love you": "https://youtu.be/rwBDGMQmmXk"
+    };
+
+    function showVideo() {
+      const input = document.getElementById("wordInput").value.toLowerCase().trim();
+      const video = document.getElementById("signVideo");
+      const notfound = document.getElementById("notfound");
+
+      if (signVideos[input]) {
+        // Set the iframe's src to the YouTube embed URL
+        video.src = signVideos[input];
+        video.style.display = "block";
+        notfound.style.display = "none";
+      } else {
+        // Clear the video src to stop any currently playing video
+        video.src = "";
+        video.style.display = "none";
+        notfound.style.display = "block";
+      }
+    }
+  </script>
+</body>
+
+</html>

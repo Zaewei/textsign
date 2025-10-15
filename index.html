@@ -2,144 +2,294 @@
 <html lang="en">
 
 <head>
-   
-  <meta charset="UTF-8">
-   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Language Video Viewer</title>
-    <style>
-    body {
-      background: #111;
-      color: #00ffcc;
-      font-family: Arial, sans-serif;
-      text-align: center;
-      padding: 20px;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASL Text Interpreter</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Define a custom color scheme for the light theme with Red Button */
+        :root {
+            /* Background and Base Text Colors */
+            --background-color: #ffffff; /* White background */
+            --light-gray: #f1f5f9; /* Tailwind bg-slate-100 (Light background for containers) */
+            --text-color: #1e293b; /* Tailwind text-slate-800 (Dark text on light background) */
+            
+            /* Accent Colors (Blue/Purple) */
+            --primary-accent: #6366f1; /* Tailwind text-indigo-500 (Primary Blue/Purple) */
+            --secondary-accent: #4f46e5; /* Tailwind text-indigo-600 (Title Accent for icon and text) */
+            
+            /* Button Color (Red) */
+            --button-color: #ef4444; /* Tailwind bg-red-500 */
+            --button-hover-color: #dc2626; /* Tailwind bg-red-600 */
+            
+            /* Title Text Color (blue-800) */
+            --title-text-color: #1e429f; /* Tailwind text-blue-800 (The requested color) */
 
-    h1 {
-      font-size: 2rem;
-    }
+            /* Input Styles */
+            --input-bg-color: #ffffff;
+            --input-border-color: #cbd5e1; /* slate-300 */
+        }
 
-    input {
-      padding: 10px;
-      font-size: 1rem;
-      width: 200px;
-      border-radius: 5px;
-      border: 1px solid #00ffcc;
-      margin-top: 15px;
-    }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Ensures the main button and content are centered horizontally */
+            padding: 1.5rem;
+            min-height: 100vh;
+        }
 
-    button {
-      padding: 10px 20px;
-      font-size: 1rem;
-      margin-left: 10px;
-      border-radius: 5px;
-      border: none;
-      background: #00ffcc;
-      color: #111;
-      cursor: pointer;
-      font-weight: bold;
-    }
+        /* Translate Button Styling */
+        #translateButton {
+            padding: 1rem 2rem;
+            font-size: 1.125rem;
+            border-radius: 8px;
+            border: none;
+            background: var(--button-color);
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.5);
+            transition: background 0.3s, transform 0.1s, box-shadow 0.3s;
+        }
 
-    button:hover {
-      background: #00cca0;
-    }
+        #translateButton:hover {
+            background: var(--button-hover-color);
+            box-shadow: 0 4px 20px rgba(239, 68, 68, 0.7);
+        }
 
-    /* Styles for the YouTube embed (iframe) */
-    #videoContainer {
-      margin-top: 20px;
-      display: flex;
-      justify-content: center;
-      /* Set a fixed aspect ratio for the video player */
-      max-width: 560px;
-      /* Standard YouTube embed width */
-      margin-left: auto;
-      margin-right: auto;
-    }
+        #translateButton:active {
+            transform: scale(0.98);
+        }
 
-    #signVideo {
-      width: 560px;
-      height: 315px;
-      /* Standard YouTube embed height for 16:9 ratio */
-      border: 3px solid #00ffcc;
-      border-radius: 10px;
-    }
+        /* Custom style for the video container border (using primary indigo accent) */
+        #videoContainer {
+            border: 3px solid var(--primary-accent);
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
+            /* Aspect Ratio box for the video */
+            position: relative;
+            width: 100%;
+            max-width: 640px;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            overflow: hidden;
+            background-color: var(--light-gray); /* Light gray background for video area */
+        }
 
-    #notfound {
-      margin-top: 20px;
-      font-size: 1.2rem;
-      color: #ff4444;
-    }
+        #signVideo {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        /* Style for the Icon (⌨️) to use a contrasting accent color */
+        .title-icon-accent {
+            color: var(--secondary-accent); /* Darker Indigo/Purple */
+        }
 
-    @media (max-width: 600px) {
-      h1 {
-        font-size: 1.5rem;
-      }
+        /* Style for the main text portion of the title */
+        .main-title-text-color {
+            color: var(--title-text-color); /* The requested blue-800 color */
+        }
 
-      input {
-        width: 150px;
-      }
+        /* Custom style for the input field */
+        #textInput {
+            padding: 0.75rem 1rem;
+            font-size: 1.125rem;
+            border-radius: 0.5rem;
+            border: 2px solid var(--input-border-color);
+            width: 100%;
+            max-width: 400px; /* Limit input width */
+            background-color: var(--input-bg-color);
+            color: var(--text-color);
+            transition: border-color 0.3s;
+        }
 
-      /* Make video responsive on small screens */
-      #signVideo {
-        width: 90%;
-        height: 200px;
-        /* Adjusted fixed height for mobile */
-        margin: 0 auto;
-      }
+        #textInput:focus {
+            outline: none;
+            border-color: var(--primary-accent);
+        }
 
-      #videoContainer {
-        max-width: 90%;
-        overflow: hidden;
-      }
-    }
-  </style>
+        /* Group for input and button alignment */
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            width: 100%;
+            max-width: 640px;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 640px) {
+            .input-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+            #textInput {
+                max-width: 100%;
+            }
+            #translateButton {
+                width: 100%;
+            }
+        }
+
+        /* New buttons styling */
+        .top-left-btn {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: #1e293b; /* Dark Blue/Gray */
+            color: #ffffff; /* FIX: Changed to White */
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            z-index: 10; /* Ensure it stays above other content */
+        }
+
+        /* FIX: A new centering container for the above-camera-btn */
+        #above-camera-wrapper {
+            width: 100%; /* Take full width */
+            max-width: 3xl; /* Match max width of the video container */
+            display: flex;
+            justify-content: center; /* Center the button horizontally */
+            margin-bottom: 10px; /* Space below the button */
+        }
+
+        /* Reverting body background for clarity, as you had bg-gray-50 */
+        body.bg-gray-50 {
+             background-color: #f9fafb; /* Tailwind gray-50 */
+        }
+
+    </style>
 </head>
 
 <body>
-    <h1>Sign Language Video Viewer</h1>
-    <input type="text" id="wordInput" placeholder="Type a word...">
-    <button onclick="showVideo()">Show Sign</button>
 
-    <div id="videoContainer">
-        <iframe id="signVideo" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="display:none;" referrerpolicy="no-referrer"></iframe>
-        <div id="notfound" style="display:none;">Sign not found</div>
-      </div>
+ <a href="https://detrafinal.flutterflow.app/" class="top-left-btn">Home</a>
 
-   
-  <script>
-    // Map words to YouTube embed URLs (e.g., "https://www.youtube.com/embed/VIDEO_ID?autoplay=1")
-    const signVideos = {
-      // Example ASL YouTube Embeds (replace with actual videos if needed)
-      "hello": "https://www.youtube.com/embed/FVjpLa8GqeM?autoplay=1",
-      "thank you": "https://www.youtube.com/embed/IvRwNLNR4_w?autoplay=1",
-      "agree": "https://www.youtube.com/embed/mfgzZNvZo9w?autoplay=1",
-      "disagree": "https://www.youtube.com/embed/_sQbTlIJZuc?autoplay=1",
-      "i love you": "https://www.youtube.com/embed/rwBDGMQmmXk?autoplay=1"
-    };
+    <h1 class="text-4xl font-extrabold my-6 drop-shadow-lg">
+        <span class="inline-block title-icon-accent">⌨️</span>
+        <span class="main-title-text-color">Text to Sign Interpreter</span>
+    </h1>
 
-    function showVideo() {
-      const input = document.getElementById("wordInput").value.toLowerCase().trim();
-      const video = document.getElementById("signVideo");
-      const notfound = document.getElementById("notfound");
+    <div class="input-group">
+        <input type="text" id="textInput" placeholder="Type a word or phrase here..." 
+               class="flex-grow p-3 border-2 border-slate-300 rounded-lg text-lg text-gray-800" 
+               aria-label="Enter text for translation" />
+        
+        <button id="translateButton" onclick="handleTranslation()" class="transition duration-300 flex-shrink-0">
+            Translate to Sign
+        </button>
+    </div>
 
-      if (signVideos[input]) {
-        // Set the iframe's src to the YouTube embed URL
-        video.src = signVideos[input];
-        video.style.display = "block";
-        notfound.style.display = "none";
-      } else {
-        // Clear the video src to stop any currently playing video
-        video.src = "";
-        video.style.display = "none";
-        notfound.style.display = "block";
-      }
-    }
-  </script>
+    <div class="w-full max-w-2xl bg-slate-100 p-6 rounded-xl shadow-lg border border-indigo-500 mb-8">
+        <h2 class="text-xl font-bold title-icon-accent mb-2">Translated Word:</h2>
+        <p id="wordDisplay"
+            class="min-h-12 bg-white p-4 rounded-lg text-2xl font-mono text-green-600 text-center font-extrabold border border-slate-300">
+            Awaiting input...
+        </p>
+    </div>
+    
+    <div id="status" class="text-base text-indigo-500 mb-6">Ready for input.</div>
+
+
+    <div class="w-full max-w-2xl flex flex-col items-center">
+        <div id="videoContainer" class="mb-4">
+            <iframe id="signVideo" src="" frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen style="display:none;" referrerpolicy="no-referrer"></iframe>
+        </div>
+
+        <div id="notfound" class="text-lg text-red-600 font-semibold mb-4" style="display:none;">
+            ❌ Sign not found for that word/phrase.
+        </div>
+    </div>
+
+
+    <script>
+        // --- Sign Language Video Data ---
+        // NOTE: This list is limited and only supports exact matches of these words/phrases.
+        const signVideos = {
+            "hello": "https://www.youtube.com/embed/FVjpLa8GqeM?autoplay=1",
+            "thank you": "https://www.youtube.com/embed/IvRwNLNR4_w?autoplay=1",
+            "agree": "https://www.youtube.com/embed/mfgzZNvZo9w?autoplay=1",
+            "disagree": "https://www.youtube.com/embed/_sQbTlIJZuc?autoplay=1",
+            "i love you": "https://www.youtube.com/embed/rwBDGMQmmXk?autoplay=1",
+            "yes": "https://www.youtube.com/embed/2_XzXg4P-tI?autoplay=1",
+            "no": "https://www.youtube.com/embed/6iWvQyqjM4I?autoplay=1",
+            "sorry": "https://www.youtube.com/embed/bS7h3Yd-lD8?autoplay=1"
+        };
+
+        // --- DOM Elements ---
+        const textInput = document.getElementById('textInput');
+        const wordDisplay = document.getElementById('wordDisplay');
+        const video = document.getElementById('signVideo');
+        const notfound = document.getElementById('notfound');
+        const statusDiv = document.getElementById('status');
+        
+        // --- Core Logic Function to Handle Translation ---
+        function handleTranslation() {
+            const input = textInput.value.toLowerCase().trim();
+            
+            if (input === "") {
+                clearVideoAndDisplay("Please type a word or phrase.");
+                return;
+            }
+
+            wordDisplay.textContent = input;
+            findAndShowSign(input);
+        }
+
+        // --- Helper Functions ---
+        function clearVideoAndDisplay(message) {
+            video.src = "";
+            video.style.display = "none";
+            notfound.style.display = "none";
+            wordDisplay.textContent = message;
+        }
+
+        function findAndShowSign(text) {
+            // Check if the exact text exists in the video map
+            if (signVideos[text]) {
+                video.src = signVideos[text]; 
+                video.style.display = "block";
+                notfound.style.display = "none";
+                statusDiv.textContent = `Displaying sign for: "${text}"`;
+            } else {
+                // If the exact phrase isn't found, check if a single word is in the map
+                const words = text.split(/\s+/);
+                let foundSingleWord = false;
+
+                // Simple check for the first word match (e.g., if user typed "hello there")
+                if (words.length > 0 && signVideos[words[0]]) {
+                     // Optionally, display the single word that was matched
+                    wordDisplay.textContent = words[0]; 
+                    video.src = signVideos[words[0]]; 
+                    video.style.display = "block";
+                    notfound.style.display = "none";
+                    statusDiv.textContent = `Phrase not found. Showing sign for first word: "${words[0]}"`;
+                    foundSingleWord = true;
+                }
+                
+                if (!foundSingleWord) {
+                    // No match found at all
+                    video.src = ""; 
+                    video.style.display = "none";
+                    notfound.style.display = "block";
+                    statusDiv.textContent = `Sign not found. Try a single word like "hello" or "sorry".`;
+                }
+            }
+        }
+    </script>
 </body>
 
 </html>
-
-
-
-
